@@ -72,11 +72,29 @@ def get_employee():
     try:
         employee_id = request.args['employee_id']
         employee = dbi.get_employee(employee_id)
-        if(employee == True):
+        if(employee != None):
             employee_json = json.dumps(employee, default=str)
             return Response(employee_json, mimetype="application/json", status=200)
         else:
             return Response("Please enter valid data", mimetype="plain/text", status=400)
+    except:
+        print("Something went wrong")
+        return Response("Sorry, something is wrong with the service. Please try again later", mimetype="plain/text", status=501)
+
+
+@app.post('/employee')
+def add_new_employee():
+    new_employee = None
+    try:
+        name = request.json['name']
+        hourly_wage = request.json['hourly_wage']
+        new_employee = dbi.add_new_employee(name, hourly_wage)
+        if(new_employee != None):
+            employee_json = json.dumps(new_employee, default=str)
+            return Response(employee_json, mimetype="application/json", status=200)
+        else:
+            return Response("Please enter valid data", mimetype="plain/text", status=400)
+
     except:
         print("Something went wrong")
         return Response("Sorry, something is wrong with the service. Please try again later", mimetype="plain/text", status=501)

@@ -102,12 +102,12 @@ def delete_item(item_id):
 
 
 def get_employee(employee_id):
-    employee = []
+    employee = None
     conn, cursor = connect_db()
     try:
         cursor.execute(
             "select name, hired_at, hourly_wage from employee e where id = ?", [employee_id])
-        employee = cursor.fetchall()
+        employee = cursor.fetchone()
     except db.OperationalError:
         print("Something is wrong with the DB, please try again in 5 minutes")
     except db.ProgrammingError:
@@ -116,3 +116,22 @@ def get_employee(employee_id):
         print("Something went wrong!")
     disconnect_db(conn, cursor)
     return employee
+
+
+def add_new_employee(name, hourly_wage):
+    new_employee = None
+    conn, cursor = connect_db()
+    try:
+        cursor.execute(
+            "insert into employee(name, hourly_wage) values(?, ?)", [name, hourly_wage])
+        conn.commit()
+        if(cursor.rowcount == 1):
+            new_employee = True
+    except db.OperationalError:
+        print("Something is wrong with the DB, please try again in 5 minutes")
+    except db.ProgrammingError:
+        print("Error running DB query, please file bug report")
+    except:
+        print("Something went wrong!")
+    disconnect_db(conn, cursor)
+    return new_employee
